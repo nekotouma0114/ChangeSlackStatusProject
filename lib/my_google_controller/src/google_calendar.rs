@@ -41,8 +41,8 @@ pub struct OriginalStartTime{
     pub dateTime: String
 }
 
-pub async fn get_oneday_schedule(email: String, oneday: Date<Local>) -> CalendarEvent {
-    let token:AccessTokenResponse = google_auth::get_access_token("./secret.json".to_string(),READONLY_CALENDER_URI.to_string()).await;
+pub async fn get_oneday_schedule(email: &str, oneday: Date<Local>) -> CalendarEvent {
+    let token:AccessTokenResponse = google_auth::get_access_token("./secret.json",READONLY_CALENDER_URI).await;
 
     let mut headers = header::HeaderMap::new();
     headers.insert(header::AUTHORIZATION, header::HeaderValue::from_str(&format!("OAuth {}",token.access_token)).unwrap());
@@ -52,7 +52,7 @@ pub async fn get_oneday_schedule(email: String, oneday: Date<Local>) -> Calendar
         .build().unwrap()
         .get(&format!("https://www.googleapis.com/calendar/v3/calendars/{}/events",email))
         .query(&[
-            ("timeZone","jst"),
+            ("timeZone","JST"),
             ("timeMin",&oneday.and_hms(0,0,0).to_rfc3339()),
             ("timeMax",&oneday.and_hms(21,59,59).to_rfc3339())
         ])
@@ -61,6 +61,6 @@ pub async fn get_oneday_schedule(email: String, oneday: Date<Local>) -> Calendar
     serde_json::from_str(&response).unwrap()
 }
 
-pub async fn get_today_schedule(email: String) -> CalendarEvent {
+pub async fn get_today_schedule(email: &str) -> CalendarEvent {
     get_oneday_schedule(email, Local::today()).await
 }

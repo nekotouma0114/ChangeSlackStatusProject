@@ -17,7 +17,7 @@ const TOKEN_PERIOD: i64  = 300;
 pub struct AccessTokenResponse {
     pub access_token: String,
     pub expires_in: i64,
-    //pub token_type: String
+    //pub token_type: &str
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -36,25 +36,23 @@ struct SecretJson{
 
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Claims {
-    iss: String,
-    scope: String,
-    aud: String,
+struct Claims<'a> {
+    iss: &'a str,
+    scope: &'a str,
+    aud: &'a str,
     exp: i64,
     iat: i64
 }
 
-pub async fn get_access_token(secret_path: String,service_uri: String) -> AccessTokenResponse {
+pub async fn get_access_token<'a>(secret_path: &'a str,service_uri: &'a str) -> AccessTokenResponse {
 
     let file = File::open(secret_path).unwrap();
     let auth_info: SecretJson = serde_json::from_reader(BufReader::new(file)).unwrap();
-    let token_uri = auth_info.token_uri.clone();
 
-    let jrt = generate_jwt(auth_info,service_uri);
+    let jrt = generate_jwt(&auth_info,service_uri);
 
-    //let response = 
     let response = reqwest::Client::new()
-        .post(&token_uri)
+        .post(&auth_info.token_uri)
         .form(&[
             ("grant_type","urn:ietf:params:oauth:grant-type:jwt-bearer"),
             ("assertion",&jrt)
@@ -63,17 +61,18 @@ pub async fn get_access_token(secret_path: String,service_uri: String) -> Access
     serde_json::from_str(&response).unwrap()
 }
 
-fn generate_jwt(auth_info: SecretJson, service_uri: String) -> String {
-    let claims = Claims::new(auth_info.client_email, auth_info.token_uri, service_uri);
+fn generate_jwt<'a>(auth_info: &'a SecretJson, service_uri: &'a str) -> String {
+    let claims = Claims::new(&auth_info.client_email, &auth_info.token_uri, &service_uri);
     let secret_key = EncodingKey::from_rsa_pem(str::as_bytes(&auth_info.private_key)).unwrap();
-    return match encode(&Header::new(Algorithm::RS256), &claims, &secret_key) {
+    
+    match encode(&Header::new(Algorithm::RS256), &claims, &secret_key) {
         Ok(t) => t,
-        Err(e) => panic!(e.to_string())
+        Err(e) => panic!(e)
     }
 }
 
-impl Claims{
-    fn new(email: String, token_uri: String, service_uri: String) -> Self{
+impl<'a> Claims<'a>{
+    fn new(email: &'a str, token_uri: &'a str, service_uri: &'a str) -> Self{
         let now: i64 = Local::now().timestamp();
 
         Claims {
