@@ -7,7 +7,7 @@ use std::fs::File;
 use std::io::BufReader;
 
 use serde::{Deserialize, Serialize};
-use jsonwebtoken::{encode, Header, Algorithm, EncodingKey,};
+use jsonwebtoken::{encode, Header, Algorithm, EncodingKey};
 use chrono::Local;
 
 //second
@@ -59,7 +59,7 @@ pub async fn get_access_token(secret_path: String,service_uri: String) -> Access
             ("grant_type","urn:ietf:params:oauth:grant-type:jwt-bearer"),
             ("assertion",&jrt)
         ]).send().await.unwrap().text().await.unwrap();
-    println!("{}",response);
+    
     serde_json::from_str(&response).unwrap()
 }
 
@@ -75,7 +75,7 @@ fn generate_jwt(auth_info: SecretJson, service_uri: String) -> String {
 impl Claims{
     fn new(email: String, token_uri: String, service_uri: String) -> Self{
         let now: i64 = Local::now().timestamp();
-        println!("{}",Local::now());
+
         Claims {
               iss : email,
               scope : service_uri,
