@@ -44,7 +44,8 @@ struct Claims<'a> {
     iat: i64
 }
 
-pub async fn get_access_token<'a>(secret_path: &'a str,service_uri: &'a str) -> AccessTokenResponse {
+//TODO: Support for multiple error types
+pub async fn get_access_token<'a>(secret_path: &'a str,service_uri: &'a str) -> Result<AccessTokenResponse,reqwest::Error> {
 
     let file = File::open(secret_path).unwrap();
     let auth_info: SecretJson = serde_json::from_reader(BufReader::new(file)).unwrap();
@@ -56,9 +57,9 @@ pub async fn get_access_token<'a>(secret_path: &'a str,service_uri: &'a str) -> 
         .form(&[
             ("grant_type","urn:ietf:params:oauth:grant-type:jwt-bearer"),
             ("assertion",&jrt)
-        ]).send().await.unwrap().text().await.unwrap();
+        ]).send().await?.text().await?;
     
-    serde_json::from_str(&response).unwrap()
+    Ok(serde_json::from_str(&response).unwrap())
 }
 
 fn generate_jwt<'a>(auth_info: &'a SecretJson, service_uri: &'a str) -> String {

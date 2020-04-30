@@ -41,26 +41,27 @@ pub struct OriginalStartTime{
     pub dateTime: String
 }
 
-pub async fn get_oneday_schedule(email: &str, oneday: Date<Local>) -> CalendarEvent {
-    let token:AccessTokenResponse = google_auth::get_access_token("./secret.json",READONLY_CALENDER_URI).await;
+//TODO: Support for multiple error types
+pub async fn get_oneday_schedule(email: &str, oneday: Date<Local>) -> Result<CalendarEvent,reqwest::Error> {
+    let token:AccessTokenResponse = google_auth::get_access_token("./secret.json",READONLY_CALENDER_URI).await?;
 
     let mut headers = header::HeaderMap::new();
     headers.insert(header::AUTHORIZATION, header::HeaderValue::from_str(&format!("OAuth {}",token.access_token)).unwrap());
     
     let response = reqwest::ClientBuilder::new()
         .default_headers(headers)
-        .build().unwrap()
+        .build()?
         .get(&format!("https://www.googleapis.com/calendar/v3/calendars/{}/events",email))
         .query(&[
             ("timeZone","JST"),
             ("timeMin",&oneday.and_hms(0,0,0).to_rfc3339()),
             ("timeMax",&oneday.and_hms(21,59,59).to_rfc3339())
         ])
-        .send().await.unwrap().text().await.unwrap();
+        .send().await?.text().await?;
     //println!("{}",response);
-    serde_json::from_str(&response).unwrap()
+    Ok(serde_json::from_str(&response).unwrap())
 }
 
-pub async fn get_today_schedule(email: &str) -> CalendarEvent {
+pub async fn get_today_schedule(email: &str) -> Result<CalendarEvent,reqwest::Error> {
     get_oneday_schedule(email, Local::today()).await
 }
