@@ -30,6 +30,23 @@ brew install filosottile/musl-cross/musl-cross
 aws configure
 ```
 
+Got the authentication information of the GCP service account.
+
+```json:google_secret.json
+{
+  "type": "service_account",
+  "project_id": "xxxxxxx",
+  "private_key_id": "xxxxxxxx",
+  "private_key": "xxxxxx",
+  "client_email": "xxxxxxxx",
+  "client_id": "xxxxxxxxx",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "xxxxxxxxxxx"
+}
+```
+
 # Build
 
 ```bash
