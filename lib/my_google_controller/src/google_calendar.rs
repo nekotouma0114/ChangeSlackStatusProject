@@ -6,10 +6,11 @@ use crate::google_auth;
 use google_auth::AccessTokenResponse;
 
 use reqwest::header;
-use chrono::{Local, Date};
+use chrono::{Utc, Date, FixedOffset};
 use serde::{Deserialize, Serialize};
 
 const READONLY_CALENDER_URI: &str = "https://www.googleapis.com/auth/calendar.readonly";
+const JST_OFFSET: i32 = 9 * 3600;
 
 ////{} => calendar id
 //const CALENDAR_EVENT_LIST_URL: &str = "https://www.googleapis.com/calendar/v3/calendars/{}/events";
@@ -45,7 +46,7 @@ pub struct OriginalStartTime{
 }
 
 //TODO: Support for multiple error types
-pub async fn get_oneday_schedule(email: &str, oneday: Date<Local>) -> Result<CalendarEvent,reqwest::Error> {
+pub async fn get_oneday_schedule(email: &str, oneday: Date<FixedOffset>) -> Result<CalendarEvent,reqwest::Error> {
     let token:AccessTokenResponse = google_auth::get_access_token("./secret.json",READONLY_CALENDER_URI).await?;
 
     let mut headers = header::HeaderMap::new();
@@ -66,5 +67,6 @@ pub async fn get_oneday_schedule(email: &str, oneday: Date<Local>) -> Result<Cal
 }
 
 pub async fn get_today_schedule(email: &str) -> Result<CalendarEvent,reqwest::Error> {
-    get_oneday_schedule(email, Local::today()).await
+    //NOTE: Dont use Date <Local> because environment variable `TZ` of lambda is a reserved variable
+    get_oneday_schedule(email, Utc::today().with_timezone(&FixedOffset::east(JST_OFFSET))).await
 }
