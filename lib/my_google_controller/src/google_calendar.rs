@@ -57,6 +57,7 @@ pub async fn get_oneday_schedule(email: &str, oneday: Date<FixedOffset>) -> Resu
         .build()?
         .get(&format!("https://www.googleapis.com/calendar/v3/calendars/{}/events",email))
         .query(&[
+            ("singleEvents","True"),
             ("timeZone","JST"),
             ("timeMin",&oneday.and_hms(0,0,0).to_rfc3339()),
             ("timeMax",&oneday.and_hms(21,59,59).to_rfc3339())
