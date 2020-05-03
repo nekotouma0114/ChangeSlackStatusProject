@@ -3,3 +3,4 @@
 /.aws-sam
 /rust.zip
 /samconfig.toml
+/google_secret.json
