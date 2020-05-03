@@ -67,6 +67,6 @@ pub async fn get_oneday_schedule(email: &str, oneday: Date<FixedOffset>) -> Resu
 }
 
 pub async fn get_today_schedule(email: &str) -> Result<CalendarEvent,reqwest::Error> {
-    //NOTE: Dont use Date <Local> because environment variable `TZ` of lambda is a reserved variable
+    //NOTE: Not recommended use `Date<Local>`, if you use other than `UTC`. timezone in AWS Lambda is `UTC`(and environment variable `TZ` is a reserved variable)
     get_oneday_schedule(email, Utc::today().with_timezone(&FixedOffset::east(JST_OFFSET))).await
 }
