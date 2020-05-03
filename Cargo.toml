@@ -11,6 +11,10 @@ lambda_runtime = "*"
 simple-error = "*"
 serde_derive = "*"
 serde = { version = "*", features = ["derive"] }
+tokio = "0.2.19"
+
+[dependencies.my_google_controller]
+path = "./lib/my_google_controller"
 
 [[bin]]
 name = "bootstrap"
