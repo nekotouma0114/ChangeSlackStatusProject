@@ -22,7 +22,8 @@ pub struct CalendarEvent{
 #[derive(Debug, Serialize, Deserialize)]
 pub struct EventItem{
     pub summary: String,
-    pub originalStartTime: Option<OriginalStartTime>,
+    #[serde(alias = "originalStartTime")]
+    pub original_starttime: Option<OriginalStartTime>,
     pub start: EventItemPeriod,
     pub end: EventItemPeriod
 }
@@ -30,7 +31,8 @@ pub struct EventItem{
 #[derive(Debug, Serialize, Deserialize)]
 pub struct EventItemPeriod {
     //unused when all day schedule
-    pub dateTime: Option<String>,
+    #[serde(alias = "dateTime")]
+    pub date_time: Option<String>,
     //unused when not all day schedule
     pub date: Option<String>
 }
@@ -38,7 +40,8 @@ pub struct EventItemPeriod {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct OriginalStartTime{
-    pub dateTime: String
+    #[serde(alias = "dateTime")]
+    pub date_time: String
 }
 
 //TODO: Support for multiple error types
