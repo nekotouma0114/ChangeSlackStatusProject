@@ -24,8 +24,15 @@ fn main() {
 
 fn my_handler(e: CustomEvent, ctx: Context) -> Result<CustomOutput, HandlerError> {
     let http_client = async{
-        let str = google_calendar::get_request("https://google.co.jp".to_string());
-        println!("{}",str.await);
+        let event_list = google_calendar::get_today_schedule("example@gmail.com");
+        for item in event_list.await.unwrap().items {
+            println!("summary:{},start:{}",
+                item.summary,
+                match item.start.date_time{
+                    Some(d) => d,
+                    None => item.start.date.unwrap()
+            });
+        }
     };
 
     tokio::runtime::Runtime::new().unwrap().block_on(http_client);
