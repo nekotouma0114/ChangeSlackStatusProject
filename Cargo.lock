@@ -6,6 +6,7 @@ version = "0.1.0"
 dependencies = [
  "lambda_runtime",
  "my_google_controller",
+ "my_slack_controller",
  "serde",
  "serde_derive",
  "simple-error",
@@ -765,6 +766,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "my_slack_controller"
+version = "0.1.0"
+dependencies = [
+ "reqwest",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "net2"
 version = "0.2.33"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -992,6 +1002,7 @@ dependencies = [
  "pin-project-lite",
  "rustls",
  "serde",
+ "serde_json",
  "serde_urlencoded",
  "time",
  "tokio 0.2.19",

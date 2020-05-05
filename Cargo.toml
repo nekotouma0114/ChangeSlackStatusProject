@@ -16,6 +16,9 @@ tokio = "0.2.19"
 [dependencies.my_google_controller]
 path = "./lib/my_google_controller"
 
+[dependencies.my_slack_controller]
+path = "./lib/my_slack_controller"
+
 [[bin]]
 name = "bootstrap"
 path = "src/main.rs"
