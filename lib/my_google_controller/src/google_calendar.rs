@@ -47,7 +47,7 @@ pub struct OriginalStartTime{
 
 //TODO: Support for multiple error types
 pub async fn get_oneday_schedule(email: &str, oneday: Date<FixedOffset>) -> Result<CalendarEvent,reqwest::Error> {
-    let token:AccessTokenResponse = google_auth::get_access_token("./secret.json",READONLY_CALENDER_URI).await?;
+    let token:AccessTokenResponse = google_auth::get_access_token("./google_secret.json",READONLY_CALENDER_URI).await?;
 
     let mut headers = header::HeaderMap::new();
     headers.insert(header::AUTHORIZATION, header::HeaderValue::from_str(&format!("OAuth {}",token.access_token)).unwrap());
