@@ -1,17 +1,26 @@
 extern crate serde;
 use serde::{Deserialize, Serialize};
 extern crate reqwest;
+extern crate chrono;
 
 use crate::slack_general;
 use reqwest::header;
 use slack_general::SlackAccessToken;
+use chrono::Local;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SlackProfile {
     pub email: String,
     pub status_text: String,
     pub status_emoji: String,
-    pub status_expiration: i32
+    pub status_expiration: i64
+}
+
+#[derive(Debug, Serialize, Deserialize,Clone)]
+pub struct SlackStatus{
+    pub status_text: String,
+    pub status_emoji: String,
+    pub status_expiration_from_now: Option<i64>
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -70,5 +79,20 @@ fn get_profile_in_response<'a>(response: &'a str) -> SlackProfile {
         response_struct.profile.unwrap()
     }else{
         panic!(response_struct.error.unwrap())
+    }
+}
+
+impl<'a> SlackProfile{
+    pub fn change_status(&mut self,status_info: &'a SlackStatus){
+        self.status_text = status_info.status_text.clone();
+        self.status_emoji = status_info.status_emoji.clone();
+        self.status_expiration =  match status_info.status_expiration_from_now {
+            Some(t) => Local::now().timestamp() + t,
+            None => 0
+        };
+    }
+
+    pub async fn get_access_token(secret_path: &'a str) -> SlackAccessToken {
+        slack_general::get_access_token(secret_path).await
     }
 }

@@ -10,8 +10,9 @@ edition = "2018"
 lambda_runtime = "*"
 simple-error = "*"
 serde_derive = "*"
-serde = { version = "*", features = ["derive"] }
 tokio = "0.2.19"
+serde = "1.0.106"
+serde_json = "1.0.51"
 
 [dependencies.my_google_controller]
 path = "./lib/my_google_controller"

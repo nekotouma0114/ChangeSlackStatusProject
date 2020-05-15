@@ -9,6 +9,8 @@ use reqwest::header;
 use chrono::{Utc, Date, FixedOffset};
 use serde::{Deserialize, Serialize};
 
+pub const JAPANESE_HOLIDAY_CALENDAR_ID: &str = "japanese__ja@holiday.calendar.google.com";
+
 const READONLY_CALENDER_URI: &str = "https://www.googleapis.com/auth/calendar.readonly";
 const JST_OFFSET: i32 = 9 * 3600;
 
@@ -45,6 +47,14 @@ pub struct OriginalStartTime{
     pub date_time: String
 }
 
+//
+// Get schedule in specified day
+//
+// @param email: Google mail address(or calendar ID)
+// @param oneday: spectified day
+//
+// @return: refs in https://developers.google.com/calendar/v3/reference/events/list
+//
 //TODO: Support for multiple error types
 pub async fn get_oneday_schedule(email: &str, oneday: Date<FixedOffset>) -> Result<CalendarEvent,reqwest::Error> {
     let token:AccessTokenResponse = google_auth::get_access_token("./google_secret.json",READONLY_CALENDER_URI).await?;
