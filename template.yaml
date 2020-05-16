@@ -1,11 +1,45 @@
 AWSTemplateFormatVersion : '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 
+Parameters:
+  SchedulerEnabled:
+    Type: String
+    AllowedValues:
+      - "True"
+      - "False"
+    Default: "False"
+
 Resources:
   ChangeSlackStatusProject:
     Type: "AWS::Serverless::Function"
     Properties:
+      Timeout: 60
       FunctionName: ChangeSlackStatus
       Handler: main
       Runtime: provided
       CodeUri: ./rust.zip
+      Events:
+        MorningEvent:
+          Type: Schedule 
+          Properties:
+            Name: SlackStatusChangeMorningEvent
+            Enabled:
+              Ref: SchedulerEnabled
+            Schedule: cron(30 9 ? * 2-6 *)
+            Input: "{\"EventType\": \"morning\"}"
+        EveningEvent:
+          Type: Schedule 
+          Properties:
+            Name: SlackStatusChangeEveningEvent
+            Enabled:
+              Ref: SchedulerEnabled
+            Schedule: cron(30 18 ? * 2-6 *)
+            Input: "{\"EventType\": \"evening\"}"
+        HolidayEvent:
+          Type: Schedule 
+          Properties:
+            Name: SlackStatusChangeHolidayEvent
+            Enabled:
+              Ref: SchedulerEnabled
+            Schedule: cron(30 9 ? * 1,7 *)
+            Input: "{\"EventType\": \"holiday\"}"

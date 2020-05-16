@@ -9,6 +9,7 @@ dependencies = [
  "my_slack_controller",
  "serde",
  "serde_derive",
+ "serde_json",
  "simple-error",
  "tokio 0.2.19",
 ]
@@ -769,6 +770,7 @@ dependencies = [
 name = "my_slack_controller"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "reqwest",
  "serde",
  "serde_json",
