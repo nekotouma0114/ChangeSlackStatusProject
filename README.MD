@@ -47,6 +47,38 @@ Got the authentication information of the GCP service account.
 }
 ```
 
+Set slack api key
+
+```json:slack_secret.json
+{
+    "token": "xxxxxxxxxxxxxxxxxxxxxxxxx"
+}
+```
+
+Set Application setting
+slack_user_id => your slack user id
+event_var => your slack status after changed
+
+```json:config.json
+{
+    "slack_user_id": "xxxxxx",
+    "event_var": {
+        "morning": {
+            "status_text": "リモートワーク中",
+            "status_emoji": ":house_with_garden:"
+        },
+        "evening": {
+            "status_text": "業務終了",
+            "status_emoji": ":pray:"
+        },
+        "holiday": {
+            "status_text": "休暇中",
+            "status_emoji": ":desert_island:"
+        }
+    }
+}
+```
+
 # Build
 
 ```bash
