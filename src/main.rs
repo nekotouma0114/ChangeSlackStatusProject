@@ -8,7 +8,7 @@ use serde::{Serialize, Deserialize};
 extern crate my_google_controller;
 extern crate my_slack_controller;
 use my_google_controller::google_calendar;
-use my_slack_controller::{slack_profile, slack_general};
+use my_slack_controller::{slack_profile,slack_profile::SlackProfile};
 
 
 #[derive(Deserialize, Clone)]
@@ -43,11 +43,11 @@ fn my_handler(e: CustomEvent, ctx: Context) -> Result<CustomOutput, HandlerError
     let http_client = async{
         let config: MyConfig = serde_json::from_reader(BufReader::new(File::open("./config.json").unwrap())).unwrap();
 
-        let slack_token = slack_general::get_access_token("./slack_secret.json").await;
-        let mut profile = slack_profile::get_profile(&slack_token,&config.slack_user_id).await;
+        let slack_profile = SlackProfile::new("./slack_secret.json",&config.slack_user_id);
+        let mut profile = slack_profile.get_profile().await;
         
 
-        let change_status: Option<slack_profile::SlackStatus> = match &*e.event_type.clone() {
+        let status_after_changed: Option<slack_profile::SlackStatus> = match &*e.event_type.clone() {
             "morning" => {
                 let my_event_list = google_calendar::get_today_schedule(&profile.email).await.unwrap();
                 Some(if is_today_holiday(&my_event_list).await { config.event_var.holiday } else { config.event_var.morning })
@@ -66,10 +66,10 @@ fn my_handler(e: CustomEvent, ctx: Context) -> Result<CustomOutput, HandlerError
             unknown => panic!(r#"Unknown EventType: EventType is "{}" "#,unknown)
         };
 
-        match change_status {
+        match status_after_changed {
             Some(status) => {
                 profile.change_status(&status);
-                slack_profile::set_profile(&slack_token,profile,&config.slack_user_id).await;
+                slack_profile.set_profile(&profile).await;
             },
             None => println!("No change status")
         }
