@@ -26,7 +26,7 @@ Resources:
             Enabled:
               Ref: SchedulerEnabled
             Schedule: cron(30 9 ? * 2-6 *)
-            Input: "{\"EventType\": \"morning\"}"
+            Input: "{\"event_type\": \"morning\"}"
         EveningEvent:
           Type: Schedule 
           Properties:
@@ -34,7 +34,7 @@ Resources:
             Enabled:
               Ref: SchedulerEnabled
             Schedule: cron(30 18 ? * 2-6 *)
-            Input: "{\"EventType\": \"evening\"}"
+            Input: "{\"event_type\": \"evening\"}"
         HolidayEvent:
           Type: Schedule 
           Properties:
@@ -42,4 +42,4 @@ Resources:
             Enabled:
               Ref: SchedulerEnabled
             Schedule: cron(30 9 ? * 1,7 *)
-            Input: "{\"EventType\": \"holiday\"}"
+            Input: "{\"event_type\": \"holiday\"}"
